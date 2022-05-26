@@ -1,0 +1,25 @@
+package router
+
+import (
+	"github.com/labstack/echo/v4"
+	// "github.com/labstack/echo/v4/middleware"
+	"log"
+	"net/http"
+)
+
+type echoRouter struct{}
+
+var echoDispatcher = echo.New()
+
+func NewEchoRouter() Router {
+	return &echoRouter{}
+}
+
+// func (*echoRouter) GET(uri string, f func(w http.ResponseWriter, r *http.Request)) {
+func (*echoRouter) GET(uri string, c RouterContext) {
+	echoDispatcher.GET(uri, c)
+}
+func (*echoRouter) SERVE(port string) {
+	log.Printf("> Echo router listening at port %s", port)
+	http.ListenAndServe(port, echoDispatcher)
+}
