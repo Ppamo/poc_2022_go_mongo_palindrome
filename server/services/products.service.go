@@ -11,7 +11,7 @@ var (
 
 type ProductsService interface {
 	FindAll() ([]entities.Product, error)
-	Find(id string) (entities.Product, error)
+	Find(id int) (entities.Product, error)
 }
 
 type service struct{}
@@ -25,6 +25,6 @@ func (*service) FindAll() ([]entities.Product, error) {
 	return repo.FindAll()
 }
 
-func (*service) Find(id string) (entities.Product, error) {
+func (*service) Find(id int) (entities.Product, error) {
 	return repo.Find(id)
 }

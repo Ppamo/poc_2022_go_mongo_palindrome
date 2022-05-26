@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"services"
+	"strconv"
+	"strings"
 )
 
 type controller struct{}
@@ -37,7 +39,7 @@ func (*controller) GetProducts(response http.ResponseWriter, request *http.Reque
 
 func (*controller) GetProduct(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
-	id := "1"
+	id, _ := strconv.Atoi(strings.Replace(request.URL.Path, "/product/", "", 1))
 	product, err := productsService.Find(id)
 	if err != nil {
 		response.WriteHeader(http.StatusInternalServerError)
