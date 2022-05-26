@@ -1,29 +1,28 @@
 package main
 
 import (
-	"fmt"
+	"controllers"
 	"log"
-	"net/http"
 	"os"
+	"repositories"
 	"routers"
+	"services"
 )
 
 const staticPath = "static"
 
 var (
-	r router.Router = router.NewMuxRouter()
+	r router.Router                   = router.NewMuxRouter()
+	m repositories.ProductsRepository = repositories.NewMongoRepository()
+	s services.ProductsService        = services.NewProductsService(m)
+	c controllers.ProductsController  = controllers.NewProductsController(s)
 )
-
-func handlerAPI(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "API")
-}
 
 func main() {
 	log.Printf("> Starting server")
 	port := os.Getenv("PORT")
-	r.GET("/", handlerAPI)
-	r.GET("/product/:id", handlerAPI)
-	r.GET("/products", handlerAPI)
+	r.GET("/products", c.GetProducts)
+	r.GET("/product/{id}", c.GetProduct)
 	r.STATIC("/", "./static/")
 	r.SERVE(port)
 }
