@@ -3,6 +3,7 @@ package controllers
 import (
 	ce "customerrors"
 	"encoding/json"
+	"entities"
 	"net/http"
 	"services"
 	"strconv"
@@ -25,9 +26,34 @@ func NewProductsController(service services.ProductsService) ProductsController 
 	return &controller{}
 }
 
+func checkPalindrome(w string) bool {
+	j := len(w) - 1
+	for i := 0; i < (len(w) / 2); i++ {
+		if w[i] != w[j] {
+			return false
+		}
+		j--
+	}
+	return true
+}
+
 func (*controller) GetProducts(response http.ResponseWriter, request *http.Request) {
+	var (
+		products []entities.Product
+		err      error
+	)
 	response.Header().Set("Content-Type", "application/json")
-	products, err := productsService.FindAll()
+	q := request.URL.Query().Get("q")
+	if len(q) > 0 {
+		products, err = productsService.FindText(q)
+		if checkPalindrome(q) {
+			for i, _ := range products {
+				products[i].Discount = 50
+			}
+		}
+	} else {
+		products, err = productsService.FindAll()
+	}
 	if err != nil {
 		response.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(response).Encode(ce.ServiceError{Message: "Error getting products"})

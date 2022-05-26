@@ -6,4 +6,5 @@ type Product struct {
 	Description string `bson:"description"`
 	Image       string `bson:"image"`
 	Price       int64  `bson:"price"`
+	Discount    int
 }

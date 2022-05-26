@@ -3,6 +3,7 @@ package repositories
 import "entities"
 
 type ProductsRepository interface {
-	FindAll() ([]entities.Product, error)
+	FindText(s string) ([]entities.Product, error)
 	Find(id int) (entities.Product, error)
+	FindAll() ([]entities.Product, error)
 }
