@@ -12,13 +12,25 @@ import (
 const staticPath = "static"
 
 var (
-	r router.Router                   = router.NewMuxRouter()
-	m repositories.ProductsRepository = repositories.NewMongoRepository()
-	s services.ProductsService        = services.NewProductsService(m)
-	c controllers.ProductsController  = controllers.NewProductsController(s)
+	r router.Router
+	m repositories.ProductsRepository
+	s services.ProductsService
+	c controllers.ProductsController
 )
 
+func setup() {
+	r = router.NewMuxRouter()
+	if os.Getenv("MODE") == "TEST" {
+		m = repositories.NewMockRepository()
+	} else {
+		m = repositories.NewMongoRepository()
+	}
+	s = services.NewProductsService(m)
+	c = controllers.NewProductsController(s)
+}
+
 func main() {
+	setup()
 	log.Printf("> Starting server")
 	port := os.Getenv("PORT")
 	r.GET("/products", c.GetProducts)
