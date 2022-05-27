@@ -316,3 +316,14 @@ Y cuando el texto de busqueda es palíndromo, se aplica un descuento del 50%:
   .
   .
 ```
+
+&nbsp;
+
+#### Tests
+
+Para ejecutar los tests se debe ejecutar el siguiente comando:
+```
+> go test -coverprofile cover.out controllers/ services/
+ok      controllers     0.004s  coverage: 81.2% of statements
+ok      services        0.005s  coverage: 100.0% of statements
+```
