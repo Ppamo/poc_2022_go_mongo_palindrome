@@ -44,10 +44,13 @@ func fillProducts(results []bson.M) ([]entities.Product, error) {
 		product := entities.Product{}
 		b, err := bson.Marshal(item)
 		if err != nil {
-			return nil, err
+			return []entities.Product{}, err
 		}
 		bson.Unmarshal(b, &product)
 		products = append(products, product)
+	}
+	if len(products) == 0 {
+		return []entities.Product{}, nil
 	}
 	return products, nil
 }
@@ -56,11 +59,11 @@ func (*repo) FindText(s string) ([]entities.Product, error) {
 	query := bson.M{"$or": []interface{}{bson.M{"brand": bson.M{"$regex": s}}, bson.M{"description": bson.M{"$regex": s}}}}
 	c, err := collection.Find(context.TODO(), query)
 	if err != nil {
-		log.Fatal(err)
+		return []entities.Product{}, err
 	}
 	var results []bson.M
 	if err = c.All(context.TODO(), &results); err != nil {
-		log.Fatal(err)
+		return []entities.Product{}, err
 	}
 	return fillProducts(results)
 }
@@ -68,7 +71,7 @@ func (*repo) FindText(s string) ([]entities.Product, error) {
 func (*repo) Find(id int) (entities.Product, error) {
 	product := entities.Product{}
 	if err := collection.FindOne(context.TODO(), bson.M{"id": id}).Decode(&product); err != nil {
-		log.Fatal(err)
+		return product, err
 	}
 	return product, nil
 }
@@ -76,11 +79,11 @@ func (*repo) Find(id int) (entities.Product, error) {
 func (*repo) FindAll() ([]entities.Product, error) {
 	c, err := collection.Find(context.TODO(), bson.D{{}})
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	var results []bson.M
 	if err = c.All(context.TODO(), &results); err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	return fillProducts(results)
 }
