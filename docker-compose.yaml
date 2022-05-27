@@ -1,0 +1,35 @@
+version: "3"
+services:
+  app:
+    build: server
+    image: app:0.1.0
+    container_name: poc_server
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_USERNAME=app
+      - DB_PASSWORD=654321
+      - AUTHDB=admin
+      - DB_HOST=persistence
+      - DB_PORT=27017
+      - DB_NAME=products
+      - COLLECTION=docs
+      - PORT=3000
+    depends_on:
+      - persistence
+    links:
+      - persistence
+  persistence:
+    image: mongo:3.6.8
+    container_name: poc_db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=123456
+      - DB_USERNAME=app
+      - DB_PASSWORD=654321
+      - AUTHDB=admin
+      - DB_NAME=products
+      - COLLECTION=docs
+    volumes:
+      - "./persistence/data:/data"
+      - "./persistence/init:/docker-entrypoint-initdb.d"
